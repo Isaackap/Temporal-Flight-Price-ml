@@ -10,4 +10,7 @@ wheels/
 .venv
 
 # Datasets
-Data/*
+data/*
+
+.env
+/runtime/*

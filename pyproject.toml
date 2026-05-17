@@ -5,12 +5,19 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "google-api-python-client>=2.196.0",
+    "google-auth-httplib2>=0.4.0",
+    "google-auth-oauthlib>=1.4.0",
     "ipykernel>=7.2.0",
+    "joblib>=1.5.3",
     "jupyter>=1.1.1",
     "matplotlib>=3.10.9",
     "numpy>=2.4.4",
     "pandas>=3.0.3",
     "pip>=26.1.1",
+    "python-dotenv>=1.2.2",
+    "requests>=2.34.0",
     "scikit-learn>=1.8.0",
+    "streamlit>=1.57.0",
     "xgboost>=3.2.0",
 ]
