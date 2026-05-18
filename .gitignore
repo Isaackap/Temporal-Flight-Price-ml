@@ -14,3 +14,5 @@ data/*
 
 .env
 /runtime/*
+credentials.json
+token.json
