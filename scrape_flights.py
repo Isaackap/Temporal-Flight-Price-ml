@@ -140,7 +140,7 @@ def searchFlightOffers(data: dict):
                 }
                 flightAlert(alert_data)
 
-if __name__ == "__main__":
+def main():
     #mock_data = mockAPI()
     #searchFlightOffers(mock_data)
     # Comment out both lines if not using AWS Secrets Manager
@@ -162,3 +162,7 @@ if __name__ == "__main__":
             print("Message: ", error_json.get("message", "No message provided."))
         except ValueError:
            print("Raw error: ", response.text)
+
+           
+if __name__ == "__main__":
+    main()
