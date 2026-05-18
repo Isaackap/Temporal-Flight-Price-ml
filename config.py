@@ -27,7 +27,7 @@ EMAIL_SUBJECT = "FlightScript Price Alert"
 # These should remain constant, the only value that changes is your personal api key that will be loaded from your local .env file
 SEARCH_FLIGHTS_API_URL = "https://booking-com15.p.rapidapi.com/api/v1/flights/searchFlights"
 HEADERS = {
-    "x-rapidapi-key": os.getenv("Env", "RAPIDAPI_KEY"),  # Change this to os.getenv() if using that option
+    "x-rapidapi-key": os.getenv("RAPIDAPI_KEY"),  # Change this to os.getenv() if using that option
     "x-rapidapi-host": "booking-com15.p.rapidapi.com"
 }
 
