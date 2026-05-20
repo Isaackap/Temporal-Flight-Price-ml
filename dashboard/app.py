@@ -11,7 +11,19 @@ sys.path.append(
 
 import scrape_flights
 
-PROBABILITY_THRESHOLD = 0.40  # Set a threshold for classifying as "BUY" or "WAIT"
+MODEL_CONFIGS = {
+    "May Logistic Regression": {
+        "model_path": "models/may_logistic_regression_model.joblib",
+        "preprocessor_path": "models/may_preprocessor.joblib",
+        "threshold": 0.40
+    },
+
+    "January Logistic Regression": {
+        "model_path": "models/jan_logistic_regression_model.joblib",
+        "preprocessor_path": "models/jan_preprocessor.joblib",
+        "threshold": 0.30
+    }
+}
 
 headers = ["airline","flight_code","source_city","source_airport",
                "departure_time","stops","duration","destination_city",
@@ -43,12 +55,6 @@ def load_latest_flight_data():
 
     return df
 
-# Load the model and preprocessor
-def load_model_and_preprocessor():
-    model = joblib.load(os.path.join("models", "logistic_regression_model.joblib"))
-    preprocessor = joblib.load(os.path.join("models", "preprocessor.joblib"))
-
-    return model, preprocessor
 
 # Process the data as needed for the model
 def process_data(df):
@@ -68,8 +74,11 @@ def process_data(df):
     return df
 
 
-def make_predictions(df):
-    model, preprocessor = load_model_and_preprocessor()
+def make_predictions(df, config):
+    # Load the model and preprocessor
+    model = joblib.load(config["model_path"])
+    preprocessor = joblib.load(config["preprocessor_path"])
+    probability_threshold = config["threshold"]
 
     processed_df = process_data(df)
 
@@ -77,7 +86,7 @@ def make_predictions(df):
     X_processed = preprocessor.transform(X_latest)
 
     buy_probabilities = model.predict_proba(X_processed)[:, 1]
-    predictions = (buy_probabilities >= PROBABILITY_THRESHOLD).astype(int)
+    predictions = (buy_probabilities >= probability_threshold).astype(int)
 
     # Keep display copy before selecting predictors
     results_df = processed_df.copy()
@@ -107,19 +116,29 @@ def dashboard():
 
     with st.sidebar:
         st.header("Model Settings")
-        st.write(f"Probability Threshold: `{PROBABILITY_THRESHOLD}`")
         st.write("Model: Logistic Regression")
+        selected_model = st.selectbox(
+            "Select Prediction Model",
+            [
+                "January Logistic Regression",
+                "May Logistic Regression"
+            ]
+        )
+        st.write(f"Probability Threshold: `{MODEL_CONFIGS[selected_model]['threshold']}`")
         st.write("Target: BUY if curent price is within 5% of future 14-day minimum price, otherwise WAIT")
 
         run_button = st.button("Load Latest Flights")
 
     if run_button:
+        config = MODEL_CONFIGS[selected_model]
+        probability_threshold = config["threshold"]
+
         # Run the flight scraping function to get the latest flight data and save it to a file
         with st.spinner("Running flight scraper and model predictions..."):
             scrape_flights.main()
 
             raw_df = load_latest_flight_data()
-            results_df = make_predictions(raw_df)
+            results_df = make_predictions(raw_df, config)
 
         st.success("Latest flight predictions generated.")
 
@@ -163,7 +182,7 @@ def dashboard():
                 "BUY": "green",
                 "WAIT": "red"
             }))
-            ax.axhline(PROBABILITY_THRESHOLD, linestyle="--", color="blue", label=f"Threshold ({PROBABILITY_THRESHOLD})")
+            ax.axhline(probability_threshold, linestyle="--", color="blue", label=f"Threshold ({probability_threshold})")
 
             ax.set_xlabel("Flight")
             ax.set_ylabel("BUY Probability")
@@ -181,7 +200,7 @@ def dashboard():
                 results_df["buy_probability"],
             )
 
-            ax2.axhline(PROBABILITY_THRESHOLD, linestyle="--", color="blue", label=f"Threshold ({PROBABILITY_THRESHOLD})")
+            ax2.axhline(probability_threshold, linestyle="--", color="blue", label=f"Threshold ({probability_threshold})")
             ax2.set_xlabel("Total Cost")
             ax2.set_ylabel("BUY Probability")
             ax2.set_title("Price vs BUY Probability")
