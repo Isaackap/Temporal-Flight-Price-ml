@@ -2,6 +2,7 @@ import pandas as pd
 import os, joblib, sys
 import streamlit as st
 import matplotlib.pyplot as plt
+from datetime import datetime, date
 
 sys.path.append(
     os.path.dirname(
@@ -124,6 +125,27 @@ def dashboard():
                 "May Logistic Regression"
             ]
         )
+
+        today = date.today()
+        one_year_from_today = date(today.year + 1, today.month, today.day)
+
+        st.write("Departure Date")
+        departure_date = st.date_input("Select Departure Date",
+                                       value=today,
+                                       min_value=today,
+                                       max_value=one_year_from_today,
+                                       format="YYYY-MM-DD"
+        )
+
+        st.write("Return Date")
+        return_date = st.date_input("Select Return Date",
+                                    value=departure_date,
+                                    min_value=departure_date,
+                                    max_value=one_year_from_today,
+                                    format="YYYY-MM-DD"
+        )
+        
+
         st.write(f"Probability Threshold: `{MODEL_CONFIGS[selected_model]['threshold']}`")
         st.write("Target: BUY if curent price is within 5% of future 14-day minimum price, otherwise WAIT")
 
@@ -135,7 +157,7 @@ def dashboard():
 
         # Run the flight scraping function to get the latest flight data and save it to a file
         with st.spinner("Running flight scraper and model predictions..."):
-            scrape_flights.main()
+            scrape_flights.main(departure_date=str(departure_date), return_date=str(return_date))
 
             raw_df = load_latest_flight_data()
             results_df = make_predictions(raw_df, config)
