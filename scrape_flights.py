@@ -152,12 +152,15 @@ def main(departure_date: str = config.DEPARTURE_DATE, return_date: str = config.
     response, data = callAPI(querystring)
     if response.ok:
         searchFlightOffers(data, departure_date, return_date)
-        # Comment out if you don't want Email alerts
-        sendEmail()
-        # Comment out if you don't want data exported to Google Sheets
-        gsheets.main()
-        # Comment out if not using AWS Secrets Manager
-        # updateTokenSecret("Token", "token.json")
+        try:
+            # Comment out if you don't want Email alerts
+            sendEmail()
+            # Comment out if you don't want data exported to Google Sheets
+            gsheets.main()
+            # Comment out if not using AWS Secrets Manager
+            # updateTokenSecret("Token", "token.json")
+        except Exception as e:
+            print(f"An error occurred: {e}")
     else:
         print(f"SearchFlight response returned False with status code: {response.status_code}")
         try:
