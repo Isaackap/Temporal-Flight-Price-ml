@@ -49,7 +49,7 @@ def main():
       flow = InstalledAppFlow.from_client_secrets_file(
           "credentials.json", SCOPES
       )
-      creds = flow.run_local_server(port=3000, access_type='offline', include_granted_scopes='true')
+      creds = flow.run_local_server(port=3000, prompt="consent", access_type='offline', include_granted_scopes='true')
     # Save the credentials for the next run
     with open("token.json", "w") as token:
       token.write(creds.to_json())
@@ -72,6 +72,6 @@ def main():
     print(err)
 
 
-#if __name__ == "__main__":
-  #main()
+if __name__ == "__main__":
+  main()
   #readText()
