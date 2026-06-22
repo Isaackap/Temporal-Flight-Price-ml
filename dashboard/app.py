@@ -2,7 +2,7 @@ import pandas as pd
 import os, joblib, sys
 import streamlit as st
 import matplotlib.pyplot as plt
-from datetime import datetime, date
+from datetime import date
 
 sys.path.append(
     os.path.dirname(
